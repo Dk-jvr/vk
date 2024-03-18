@@ -1,0 +1,14 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "postgres"
+    container_name: "pg_film_library"
+    environment:
+      - POSTGRES_DB=filmLibrary
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+    restart: unless-stopped

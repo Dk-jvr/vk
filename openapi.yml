@@ -1,0 +1,311 @@
+openapi: 3.0.0
+info:
+  title: Film Library API
+  description: REST API for managing films and actors
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /login:
+    post:
+      summary: User login
+      description: Endpoint for user authentication and token generation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request
+  /actors:
+    get:
+      summary: Get list of actors
+      description: Retrieve a list of actors.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActorList'
+        '500':
+          description: Internal server error
+  /films:
+    get:
+      summary: Get list of films
+      description: Retrieve a list of films.
+      parameters:
+        - name: sort
+          in: query
+          description: Sort order (ASC or DESC)
+          schema:
+            type: string
+        - name: field
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilmList'
+        '500':
+          description: Internal server error
+    post:
+      summary: Add a new film
+      description: Add a new film to the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFilm'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /film:
+    get:
+      summary: Search films
+      description: Search films by title or actor name.
+      parameters:
+        - name: title
+          in: query
+          description: Title of the film
+          schema:
+            type: string
+        - name: actor
+          in: query
+          description: Name of the actor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+  /admin/actors/{actor}:
+    delete:
+      summary: Delete actor
+      description: Delete an actor by name (admin only).
+      parameters:
+        - name: actor
+          in: path
+          description: Name of the actor to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal server error
+    post:
+      summary: Update actor
+      description: Update actor details (admin only).
+      parameters:
+        - name: actor
+          in: path
+          description: Name of the actor to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorUpdate'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /admin/films/{film}:
+    delete:
+      summary: Delete film
+      description: Delete a film by name (admin only).
+      parameters:
+        - name: film
+          in: path
+          description: Name of the film to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal server error
+    post:
+      summary: Update film
+      description: Update film details (admin only).
+      parameters:
+        - name: film
+          in: path
+          description: Name of the film to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmUpdate'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    UserCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        token:
+          type: string
+    ActorList:
+      type: object
+      properties:
+        name:
+          type: string
+        birthDay:
+          type: string
+        actorGender:
+          type: string
+        films:
+          type: array
+          items:
+            type: string
+    FilmList:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+        rating:
+          type: integer
+        castList:
+          type: array
+          items:
+            type: string
+    NewFilm:
+      type: object
+      required:
+        - name
+        - description
+        - releaseDate
+        - rating
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        rating:
+          type: integer
+        castList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+    ActorUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        actorGender:
+          type: string
+        birthDay:
+          type: string
+          format: date
+    FilmUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        rating:
+          type: integer
+        castList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+    Actor:
+      type: object
+      properties:
+        name:
+          type: string
+        actorGender:
+          type: string
+        birthDay:
+          type: string
+          format: date
+    Film:
+      type: object
+      required:
+        - name
+        - description
+        - releaseDate
+        - rating
+        - castList
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 10
+        castList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
