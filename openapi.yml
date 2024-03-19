@@ -4,7 +4,7 @@ info:
   description: REST API for managing films and actors
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:3000
 paths:
   /login:
     post:
